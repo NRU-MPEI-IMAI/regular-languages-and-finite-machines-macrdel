@@ -1,0 +1,301 @@
+\documentclass[a4paper, 12pt]{article}
+\usepackage[utf8]{inputenc}
+
+\usepackage[left=1.5cm,right=1.5cm,
+    top=2cm,bottom=2cm, bindingoffset=0cm]{geometry}
+    
+\usepackage[]{dot2texi}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows}
+
+\usepackage[T2A]{fontenc} %кодировка
+\usepackage[utf8]{inputenc} %кодировка исходного текста
+\usepackage[english, russian]{babel} %локализация и переносы
+
+%Математика
+\usepackage{amsmath, amsfonts, amssymb, amsthm, mathtools}
+
+\title{DFA 1}
+\author{Руслан Кутдусов А-13а}
+\date{March 2022}
+
+\begin{document}
+
+\maketitle
+
+\section*{Task}
+Ответом на данное задание является конечный автомат, распознающий описанный язык.
+Автомат должен быть детерминированным.
+
+\section*{1}
+\[ L = \{ w \in \{a, b, c\}^* \quad | \quad |w|_c = 1 \} \]
+
+\begin{center}
+\begin{dot2tex}%[pgf]
+digraph DFA1
+{
+rankdir=LR;
+node [shape = none]; "";
+node [shape = doublecircle]; q2;
+node [shape = circle];
+"" -> q1;
+q1 -> q1 [label = "a, b"];
+q1 -> q2 [label = "c"];
+q2 -> q2 [label = "a, b"]
+}
+\end{dot2tex}
+\end{center}
+
+\section*{2}
+
+\[
+\begin{aligned}
+L &= \{ w \in \{a, b\}^* \quad | \quad |w|_a \leq 2, |w|_b \geq 2 \} \\ 
+L_1 &= \{ w \in \{a, b\}^* \quad | \quad |w|_a \leq 2 \}
+\end{aligned}
+\]
+
+\begin{center}
+\begin{dot2tex}%[pgf]
+digraph DFA21
+{
+rankdir=LR;
+node [shape = none]; "";
+node [shape = doublecircle];
+"" -> s1;
+s1 -> s1 [label = "b"];
+s1 -> t11 [label = "a"];
+t11 -> t11 [label = "b"];
+t11 -> t12 [label = "a"];
+t12 -> t12 [label = "b"]
+}
+\end{dot2tex}
+\end{center}
+
+\[ 
+\begin{aligned}
+L_2 = \{ w \in \{a, b\}^* \quad | \quad |w|_b \geq 2 \}
+\end{aligned}
+\]
+
+\begin{center}
+\begin{dot2tex}%[pgf]
+digraph DFA22
+{
+rankdir=LR;
+node [shape = none]; "";
+node [shape = doublecircle]; t2;
+node [shape = circle];
+"" -> s2;
+s2 -> s2 [label = "a"];
+s2 -> q2 [label = "b"];
+q2 -> q2 [label = "a"];
+q2 -> t2 [label = "b"];
+t2 -> t2 [label = "a, b"]
+}
+\end{dot2tex}
+\end{center}
+
+\newpage
+
+\[
+\begin{aligned}
+L &= L_1 \cap L_2 \\
+A_1 &= \{ \Sigma = \{a, b\}, Q_1 = \{ s_1, t_{11}, t_{12} \}, s_1, T_1 = \{ s_1, t_{11}, t_{12} \}, \delta_1  \} \\
+A_2 &= \{ \Sigma = \{a, b\}, Q_2 = \{ s_2, q_2, t_2 \}, s_2, T_2 = \{ t_2 \}, \delta_2  \} \\
+A &= \{ \Sigma, Q, s, T, \delta \}
+\end{aligned}
+\]
+
+
+\begin{enumerate}
+    \item $ \Sigma = \{ a, b \} $
+    \item $ Q = Q_1 \times Q_2 = \{ \langle s_1, s_2 \rangle, \langle s_1, q_2 \rangle, \langle s_1, t_2 \rangle, \langle t_{11}, s_2 \rangle, \langle t_{11}, q_2 \rangle, \langle t_{11}, t_2 \rangle, \langle t_{12}, s_2 \rangle, \langle t_{12}, q_2 \rangle, \langle t_{12}, t_2 \rangle \} $
+    \item $ s = \langle s_1, s_2 \rangle $
+    \item $ T = T_1 \times T_2 = \{ \langle s_1, t_2 \rangle, \langle t_{11}, t_2 \rangle, \langle t_{12}, t_2 \rangle \}$
+    \item $ \delta : $
+    \begin{itemize}
+        \item $ \delta (\langle s_1, s_2 \rangle, a) = \langle \delta_1 (s_1, a), \delta_2 (s_2, a) \rangle = \langle t_{11}, s_2 \rangle $
+        \item $ \delta (\langle s_1, s_2 \rangle, b) = \langle \delta_1 (s_1, b), \delta_2 (s_2, b) \rangle = \langle s_1, q_2 \rangle $
+        \item $ \delta (\langle s_1, q_2 \rangle, a) = \langle \delta_1 (s_1, a), \delta_2 (q_2, a) \rangle = \langle t_{11}, q_2 \rangle $
+        \item $ \delta (\langle s_1, q_2 \rangle, b) = \langle \delta_1 (s_1, b), \delta_2 (q_2, b) \rangle = \langle s_1, t_2 \rangle $
+        \item $ \delta (\langle s_1, t_2 \rangle, a) = \langle \delta_1 (s_1, a), \delta_2 (t_2, a) \rangle = \langle t_{11}, t_2 \rangle $
+        \item $ \delta (\langle s_1, t_2 \rangle, b) = \langle \delta_1 (s_1, b), \delta_2 (t_2, b) \rangle = \langle s_1, t_2 \rangle $
+        
+        \item $ \delta (\langle t_{11}, s_2 \rangle, a) = \langle \delta_1 (t_{11}, a), \delta_2 (s_2, a) \rangle = \langle t_{12}, s_2 \rangle $
+        \item $ \delta (\langle t_{11}, s_2 \rangle, b) = \langle \delta_1 (t_{11}, b), \delta_2 (s_2, b) \rangle = \langle t_{11}, q_2 \rangle $
+        \item $ \delta (\langle t_{11}, q_2 \rangle, a) = \langle \delta_1 (t_{11}, a), \delta_2 (q_2, a) \rangle = \langle t_{12}, q_2 \rangle $
+        \item $ \delta (\langle t_{11}, q_2 \rangle, b) = \langle \delta_1 (t_{11}, b), \delta_2 (q_2, b) \rangle = \langle t_{11}, t_2 \rangle $
+        \item $ \delta (\langle t_{11}, t_2 \rangle, a) = \langle \delta_1 (t_{11}, a), \delta_2 (t_2, a) \rangle = \langle t_{12}, t_2 \rangle $
+        \item $ \delta (\langle t_{11}, t_2 \rangle, b) = \langle \delta_1 (t_{11}, b), \delta_2 (t_2, b) \rangle = \langle t_{11}, t_2 \rangle $
+        
+        \item $ \delta (\langle t_{12}, s_2 \rangle, a) = \langle \delta_1 (t_{12}, a), \delta_2 (s_2, a) \rangle = \o $
+        \item $ \delta (\langle t_{12}, s_2 \rangle, b) = \langle \delta_1 (t_{12}, b), \delta_2 (s_2, b) \rangle = \langle t_{12}, q_2 \rangle $
+        \item $ \delta (\langle t_{12}, q_2 \rangle, a) = \langle \delta_1 (t_{12}, a), \delta_2 (q_2, a) \rangle = \o $
+        \item $ \delta (\langle t_{12}, q_2 \rangle, b) = \langle \delta_1 (t_{12}, b), \delta_2 (q_2, b) \rangle = \langle t_{12}, t_2 \rangle $
+        \item $ \delta (\langle t_{12}, t_2 \rangle, a) = \langle \delta_1 (t_{12}, a), \delta_2 (t_2, a) \rangle = \o $
+        \item $ \delta (\langle t_{12}, t_2 \rangle, b) = \langle \delta_1 (t_{12}, b), \delta_2 (t_2, b) \rangle = \langle t_{12}, t_2 \rangle $
+    \end{itemize}
+\end{enumerate}
+
+We have the following automaton:
+
+\begin{flushleft}
+\begin{dot2tex}%[pgf]
+digraph DFA2
+{
+rankdir=LR;
+node [shape = doublecircle]; s1t2 t11t2 t12t2;
+node [shape=none]; "";
+node [shape = circle];
+"" -> s1s2;
+s1s2 -> t11s2 [label = "a"];
+s1s2 -> s1q2 [label = "b"];
+s1q2 -> t11q2 [label = "a"];
+s1q2 -> s1t2 [label = "b"];
+s1t2 -> t11t2 [label = "a"];
+s1t2 -> s1t2 [label = "b"];
+t11s2 -> t12s2 [label = "a"];
+t11s2 -> t11q2 [label = "b"];
+t11q2 -> t12q2 [label = "a"];
+t11q2 -> t11t2 [label = "b"];
+t11t2 -> t12t2 [label = "a"];
+t11t2 -> t11t2 [label = "b"];
+t12s2 -> t12q2 [label = "b"];
+t12q2 -> t12t2 [label = "b"];
+t12t2 -> t12t2 [label = "b"]
+}
+\end{dot2tex}
+\end{flushleft}
+
+\section*{3}
+\[
+\begin{aligned}
+L &= \{ w \in \{a, b\}^* \quad | \quad |w|_a \neq |w|_b \} \\ 
+L_1 &= \{ w \in \{a, b\}^* \quad | \quad |w|_a \text{ четно}, |w|_b \text{ нечетно} \} 
+\end{aligned}
+\]
+
+\[ L_{11} = \{ w \in \{a, b\}^* \quad | \quad |w|_a \text{ четно} \} \]
+
+\begin{center}
+\begin{dot2tex}
+digraph DFA311 {
+rankdir = LR;
+node [shape = doublecircle]; s11;
+node [shape=none]; "";
+node [shape = circle];
+"" -> s11;
+s11 -> s11 [label = "b"];
+s11 -> t11 [label = "a"];
+t11 -> t11 [label = "b"];
+t11 -> s11 [label = "a"]
+}
+\end{dot2tex}
+\end{center}
+
+\[
+L_{12} = \{ w \in \{a, b\}^* \quad | \quad |w|_b \text{ нечетно} \}
+\]
+
+\begin{center}
+\begin{dot2tex}
+digraph DFA312 {
+rankdir = LR;
+node [shape=none]; "";
+node [shape = doublecircle]; t12;
+node [shape = circle];
+"" -> s12;
+s12 -> s12 [label = "a"];
+s12 -> t12 [label = "b"];
+t12 -> t12 [label = "a"];
+t12 -> s12 [label = "b"]
+}
+\end{dot2tex}
+\end{center}
+
+\[
+\begin{aligned}
+L_1 &= L_{11} \cap L_{12} \\
+\Sigma_1 &= \{a, b \} \\
+Q_1 &= Q_{11} \times Q_{12} = \{  \langle s_{11}, s_{12} \rangle, \langle s_{11}, t_{12} \rangle, \langle t_{11}, s_{12} \rangle, \langle t_{11}, t_{12} \rangle  \} \\
+s_1 &= \langle s_{11}, s_{12} \rangle \\
+T_1 &= T_{11} \times T_{12} = \{ \langle s_{11}, t_{12} \rangle \} \\
+\delta_1& :
+\end{aligned}
+\]
+
+
+\begin{itemize}
+    \item $ \delta_1 (\langle s_{11}, s_{12} \rangle, a) = \langle \delta_{11} (s_{11}, a), \delta_{12} (s_{12}, a) \rangle = \langle t_{11}, s_{12} \rangle $
+    \item $ \delta_1 (\langle s_{11}, s_{12} \rangle, b) = \langle \delta_{11} (s_{11}, b), \delta_{12} (s_{12}, b) \rangle = \langle s_{11}, t_{12} \rangle $
+    \item $ \delta_1 (\langle s_{11}, t_{12} \rangle, a) = \langle \delta_{11} (s_{11}, a), \delta_{12} (t_{12}, a) \rangle = \langle t_{11}, t_{12} \rangle $
+    \item $ \delta_1 (\langle s_{11}, t_{12} \rangle, b) = \langle \delta_{11} (s_{11}, b), \delta_{12} (t_{12}, b) \rangle = \langle s_{11}, s_{12} \rangle $
+    \item $ \delta_1 (\langle t_{11}, s_{12} \rangle, a) = \langle \delta_{11} (t_{11}, a), \delta_{12} (s_{12}, a) \rangle = \langle s_{11}, s_{12} \rangle $
+    \item $ \delta_1 (\langle t_{11}, s_{12} \rangle, b) = \langle \delta_{11} (t_{11}, b), \delta_{12} (s_{12}, b) \rangle = \langle t_{11}, t_{12} \rangle $
+    \item $ \delta_1 (\langle t_{11}, t_{12} \rangle, a) = \langle \delta_{11} (t_{11}, a), \delta_{12} (t_{12}, a) \rangle = \langle s_{11}, t_{12} \rangle $
+    \item $ \delta_1 (\langle t_{11}, t_{12} \rangle, b) = \langle \delta_{11} (t_{11}, b), \delta_{12} (t_{12}, b) \rangle = \langle t_{11}, s_{12} \rangle $
+\end{itemize}
+
+Имеем:
+
+\begin{dot2tex}
+digraph DFA31 {
+rankdir = LR;
+node [shape=none]; "";
+node [shape = doublecircle]; s11t12;
+node [shape = circle];
+"" -> s11s12;
+s11s12 -> t11s12 [label = "a"];
+s11s12 -> s11t12 [label = "b"];
+t11s12 -> s11s12 [label = "a"];
+t11s12 -> t11t12 [label = "b"];
+t11t12 -> s11t12 [label = "a"];
+t11t12 -> t11s12 [label = "b"];
+s11t12 -> t11t12 [label = "a"];
+s11t12 -> s11s12 [label = b]
+}
+\end{dot2tex}
+
+\[ L_2 = \{ w \in \{a, b\}^* \quad | \quad |w|_b \text{ четно}, |w|_a \text{ нечетно} \} \]
+
+Аналогично:
+
+\begin{dot2tex}
+digraph DFA32 {
+rankdir = LR;
+node [shape=none]; "";
+node [shape = doublecircle]; s21t22;
+node [shape = circle];
+"" -> s21s22;
+s21s22 -> t21s22 [label = "b"];
+s21s22 -> s21t22 [label = "a"];
+t21s22 -> s21s22 [label = "b"];
+t21s22 -> t21t22 [label = "a"];
+t21t22 -> s21t22 [label = "b"];
+t21t22 -> t21s22 [label = "a"];
+s21t22 -> t21t22 [label = "b"];
+s21t22 -> s21s22 [label = a]
+}
+\end{dot2tex}
+
+Имеем два автомата, которые распознают разные длины последовательностей символов. Но в общем случае построить ДКА, который распознает разные длины последовательностей символов (например, обе длины четные или обе длины нечетные) нельзя. Также как это нельзя сделать для языка, в котором требуются одинаковые длины. Такие языки являются нерегулярными. ДКА не способен считать, поскольку он должен иметь состояние для представления любого возможного количества символов "a" или символов \text{"b"} , а это означает, что ему потребуется бесконечное число состояний. То есть для постороения такого ДКА требуются дополнительные ограничения. 
+
+\section*{4}
+\[ L = \{ w \in \{ a, b \}^* \quad | \quad ww = www \} \]
+
+Одно слово удовлетворяет данному языку $ - $ $ w = \lambda $. Имеем следующее справедливое свойство конкатенации строк: $ \lambda w = w \lambda = w $. Тогда, $ ww = \lambda ww = w \lambda w = ww \lambda = www $.
+
+\begin{center}
+\begin{dot2tex}
+digraph DFA4 {
+rankdir = LR;
+node [shape=none]; "";
+node [shape = doublecircle]; st0;
+"" -> st0;
+st0 -> st0
+}
+\end{dot2tex}
+\end{center}
+
+\end{document}
