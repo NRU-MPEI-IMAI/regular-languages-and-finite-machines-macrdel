@@ -1,0 +1,580 @@
+\documentclass[a4paper, 12pt]{article}
+\usepackage[utf8]{inputenc}
+
+\usepackage[left=1cm,right=1cm,
+    top=2cm,bottom=2cm, bindingoffset=0cm]{geometry}
+    
+\usepackage[]{dot2texi}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows}
+
+\usepackage[T2A]{fontenc} 
+\usepackage[utf8]{inputenc}
+\usepackage[english, russian]{babel} 
+
+\usepackage[usenames]{color}
+\usepackage{colortbl}
+
+\usepackage{amsmath, amsfonts, amssymb, amsthm, mathtools}
+\title{DFA 2}
+\author{Руслан Кутдусов А-13а}
+\date{March 2022}
+
+\begin{document}
+
+\maketitle
+
+\section*{Task}
+Ответом на данное задание является конечный автомат, распознающий описанный язык. Требуется, чтобы он был построен при помощи прямого произведения ДКА и его свойств.
+
+\section*{1}
+\[ 
+\begin{aligned}
+L_1 &= \{ w \in \{a, b\}^* \quad | \quad |w|_a \geq 2 \wedge |w|_b \geq 2 \} \\
+L_{11} &= \{ w \in \{a, b\}^* \quad | \quad |w|_a \geq 2 \}
+\end{aligned}
+\]
+
+\begin{center}
+\begin{dot2tex} % [pgf]
+digraph DFA11
+{
+rankdir=LR;
+node [shape = none]; "";
+node [shape = doublecircle]; t1;
+node [shape = circle];
+"" -> s1;
+s1 -> s1 [label = "b"];
+s1 -> q1 [label = "a"];
+q1 -> q1 [label = "b"];
+q1 -> t1 [label = "a"];
+t1 -> t1 [label = "a, b"]
+}
+\end{dot2tex}
+\end{center}
+
+\[ L_{12} &= \{ w \in \{a, b\}^* \quad | \quad |w|_b \geq 2 \} \]
+
+\begin{center}
+\begin{dot2tex}%[pgf]
+digraph DFA12
+{
+rankdir=LR;
+node [shape = none]; "";
+node [shape = doublecircle]; t2;
+node [shape = circle];
+"" -> s2;
+s2 -> s2 [label = "a"];
+s2 -> q2 [label = "b"];
+q2 -> q2 [label = "a"];
+q2 -> t2 [label = "b"];
+t2 -> t2 [label = "a, b"]
+}
+\end{dot2tex}
+\end{center}
+
+\[
+\begin{aligned}
+L_1 &= L_{11} \cap L_{12} \\
+A_{11} &= \{ \Sigma = \{a, b\}, Q_1 = \{ s_1, q_1, t_1 \}, s_1, T_1 = \{ t_1 \}, \delta_1  \} \\
+A_{12} &= \{ \Sigma = \{a, b\}, Q_2 = \{ s_2, q_2, t_2 \}, s_2, T_2 = \{ t_2 \}, \delta_2  \} \\
+A_1 &= \{ \Sigma, Q, s, T, \delta \}
+\end{aligned}
+\]
+
+\begin{enumerate}
+    \item $ \Sigma = \{ a, b \} $
+    \item $ Q = Q_1 \times Q_2 = \{ \langle s_1, s_2 \rangle, \langle s_1, q_2 \rangle, \langle s_1, t_2 \rangle, \langle q_1, s_2 \rangle, \langle q_1, q_2 \rangle, \langle q_1, t_2 \rangle, \langle t_1, s_2 \rangle, \langle t_1, q_2 \rangle, \langle t_1, t_2 \rangle \} $
+    \item $ s = \langle s_1, s_2 \rangle $
+    \item $ T = T_1 \times T_2 = \{ \langle t_1, t_2 \rangle \}$
+    \item $ \delta : $
+    \begin{itemize}
+        \item $ \delta (\langle s_1, s_2 \rangle, a) = \langle \delta_1 (s_1, a), \delta_2 (s_2, a) \rangle = \langle q_1, s_2 \rangle $
+        \item $ \delta (\langle s_1, s_2 \rangle, b) = \langle \delta_1 (s_1, b), \delta_2 (s_2, b) \rangle = \langle s_1, q_2 \rangle $
+        \item $ \delta (\langle s_1, q_2 \rangle, a) = \langle \delta_1 (s_1, a), \delta_2 (q_2, a) \rangle = \langle q_1, q_2 \rangle $
+        \item $ \delta (\langle s_1, q_2 \rangle, b) = \langle \delta_1 (s_1, b), \delta_2 (q_2, b) \rangle = \langle s_1, t_2 \rangle $
+        \item $ \delta (\langle s_1, t_2 \rangle, a) = \langle \delta_1 (s_1, a), \delta_2 (t_2, a) \rangle = \langle q_1, t_2 \rangle $
+        \item $ \delta (\langle s_1, t_2 \rangle, b) = \langle \delta_1 (s_1, b), \delta_2 (t_2, b) \rangle = \langle s_1, t_2 \rangle $
+        
+        \item $ \delta (\langle q_1, s_2 \rangle, a) = \langle \delta_1 (q_1, a), \delta_2 (s_2, a) \rangle = \langle t_1, s_2 \rangle $
+        \item $ \delta (\langle q_1, s_2 \rangle, b) = \langle \delta_1 (q_1, b), \delta_2 (s_2, b) \rangle = \langle q_1, q_2 \rangle $
+        \item $ \delta (\langle q_1, q_2 \rangle, a) = \langle \delta_1 (q_1, a), \delta_2 (q_2, a) \rangle = \langle t_1, q_2 \rangle $
+        \item $ \delta (\langle q_1, q_2 \rangle, b) = \langle \delta_1 (q_1, b), \delta_2 (q_2, b) \rangle = \langle q_1, t_2 \rangle $
+        \item $ \delta (\langle q_1, t_2 \rangle, a) = \langle \delta_1 (q_1, a), \delta_2 (t_2, a) \rangle = \langle t_1, t_2 \rangle $
+        \item $ \delta (\langle q_1, t_2 \rangle, b) = \langle \delta_1 (q_1, b), \delta_2 (t_2, b) \rangle = \langle q_1, t_2 \rangle $
+        
+        \item $ \delta (\langle t_1, s_2 \rangle, a) = \langle \delta_1 (t_1, a), \delta_2 (s_2, a) \rangle = \langle t_1, s_2 \rangle $
+        \item $ \delta (\langle t_1, s_2 \rangle, b) = \langle \delta_1 (t_1, b), \delta_2 (s_2, b) \rangle = \langle t_1, q_2 \rangle $
+        \item $ \delta (\langle t_1, q_2 \rangle, a) = \langle \delta_1 (t_1, a), \delta_2 (q_2, a) \rangle =  \langle t_1, q_2 \rangle $
+        \item $ \delta (\langle t_1, q_2 \rangle, b) = \langle \delta_1 (t_1, b), \delta_2 (q_2, b) \rangle = \langle t_1, t_2 \rangle $
+        \item $ \delta (\langle t_1, t_2 \rangle, a) = \langle \delta_1 (t_1, a), \delta_2 (t_2, a) \rangle = \langle t_1, t_2 \rangle $
+        \item $ \delta (\langle t_1, t_2 \rangle, b) = \langle \delta_1 (t_1, b), \delta_2 (t_2, b) \rangle = \langle t_1, t_2 \rangle $
+    \end{itemize}
+\end{enumerate}
+
+Теперь можем построить автомат:
+
+\begin{flushleft}
+\begin{dot2tex}%[pgf]
+digraph DFA1
+{
+rankdir=LR;
+node [shape = none]; "";
+node [shape = doublecircle]; t1t2;
+node [shape = circle];
+"" -> s1s2;
+s1s2 -> q1s2 [label = "a"];
+s1s2 -> s1q2 [label = "b"];
+s1q2 -> q1q2 [label = "a"];
+s1q2 -> s1t2 [label = "b"];
+s1t2 -> q1t2 [label = a];
+s1t2 -> s1t2 [label = b];
+q1s2 -> t1s2 [label = a];
+q1s2 -> q1q2 [label = b];
+q1q2 -> t1q2 [label = a];
+q1q2 -> q1t2 [label = b];
+q1t2 -> t1t2 [label = a];
+q1t2 -> q1t2 [label = b];
+t1s2 -> t1s2 [label = a];
+t1s2 -> t1q2 [label = b];
+t1q2 -> t1q2 [label = a];
+t1q2 -> t1t2 [label = b];
+t1t2 -> t1t2 [label = "a,b"]
+}
+\end{dot2tex}
+\end{flushleft}
+
+\section*{2}
+\[
+\begin{aligned}
+L_2 &= \{w \in \{a, b \}^{*} \quad | \quad |w| \geq 3 \wedge |w| \text{ нечётное} \} \\
+L_{21} &= \{w \in \{a, b \}^{*} \quad | \quad |w| \geq 3 \}
+\end{aligned}
+\]
+
+\begin{center}
+    \begin{dot2tex}
+        digraph DFA21 {
+            rankdir=LR;
+            node [shape = none]; "";
+            node [shape = doublecircle]; t1;
+            node [shape = circle];
+            "" -> s1;
+            s1 -> q11 [label = "a,b"];
+            q11 -> q12 [label = "a,b"];
+            q12 -> t1 [label = "a,b"];
+            t1 -> t1 [label = "a,b"]
+        }
+    \end{dot2tex}
+\end{center}
+
+\[ L_{22} = \{  w \in \{a, b \}^{*} \quad | \quad |w| \text{ нечётное}  \} \]
+
+\begin{center}
+    \begin{dot2tex}
+        digraph DFA22 {
+            rankdir=LR;
+            node [shape = none]; "";
+            node [shape = circle]; s2;
+            node [shape = doublecircle];
+            "" -> s2;
+            s2 -> t2 [label = "a,b"];
+            t2 -> s2 [label = "a,b"];
+        }
+    \end{dot2tex}
+\end{center}
+
+\[
+\begin{aligned}
+L_2 &= L_{21} \cap L_{22} \\
+A_{21} &= \{ \Sigma = \{a, b\}, Q_1 = \{ s_1, q_{11}, q_{12}, t_1 \}, s_1, T_1 = \{ t_1 \}, \delta_1  \} \\
+A_{22} &= \{ \Sigma = \{a, b\}, Q_2 = \{ s_2, t_2 \}, s_2, T_2 = \{ t_2 \}, \delta_2  \} \\
+A_2 &= \{ \Sigma, Q, s, T, \delta \}
+\end{aligned}
+\]
+
+\begin{enumerate}
+    \item $ \Sigma = \{ a, b \} $
+    \item $ Q = Q_1 \times Q_2 = \{ \langle s_1, s_2 \rangle, \langle s_1, t_2 \rangle, \langle q_{11}, s_2 \rangle, \langle q_{11}, t_2 \rangle, \langle q_{12}, s_2 \rangle, \langle q_{12}, t_2 \rangle, \langle t_1, s_2 \rangle, \langle t_1, t_2 \rangle \} $
+    \item $ s = \langle s_1, s_2 \rangle $
+    \item $ T = T_1 \times T_2 = \{ \langle t_1, t_2 \rangle \}$
+    \item $ \delta : $
+    \begin{itemize}
+        \item $ \delta (\langle s_1, s_2 \rangle, a) = \langle \delta_1 (s_1, a), \delta_2 (s_2, a) \rangle = \langle q_{11}, t_2 \rangle $
+        \item $ \delta (\langle s_1, s_2 \rangle, b) = \langle \delta_1 (s_1, b), \delta_2 (s_2, b) \rangle = \langle q_{11}, t_2 \rangle $
+        
+        \item $ \delta (\langle s_1, t_2 \rangle, a) = \langle \delta_1 (s_1, a), \delta_2 (t_2, a) \rangle = \langle q_{11}, s_2 \rangle $
+        \item $ \delta (\langle s_1, t_2 \rangle, b) = \langle \delta_1 (s_1, b), \delta_2 (t_2, b) \rangle = \langle q_{11}, s_2 \rangle $
+        
+        \item $ \delta (\langle q_{11}, s_2 \rangle, a) = \langle \delta_1 (q_{11}, a), \delta_2 (s_2, a) \rangle = \langle q_{12}, t_2 \rangle $
+        \item $ \delta (\langle q_{11}, s_2 \rangle, b) = \langle \delta_1 (q_{11}, b), \delta_2 (s_2, b) \rangle = \langle q_{12}, t_2 \rangle $
+        
+        \item $ \delta (\langle q_{11}, t_2 \rangle, a) = \langle \delta_1 (q_{11}, a), \delta_2 (t_2, a) \rangle = \langle q_{12}, s_2 \rangle $
+        \item $ \delta (\langle q_{11}, t_2 \rangle, b) = \langle \delta_1 (q_{11}, b), \delta_2 (t_2, b) \rangle = \langle q_{12}, s_2 \rangle $
+        
+        \item $ \delta (\langle q_{12}, s_2 \rangle, a) = \langle \delta_1 (q_{12}, a), \delta_2 (s_2, a) \rangle = \langle t_1, t_2 \rangle $
+        \item $ \delta (\langle q_{12}, s_2 \rangle, b) = \langle \delta_1 (q_{12}, b), \delta_2 (s_2, b) \rangle = \langle t_1, t_2 \rangle $
+        
+        \item $ \delta (\langle q_{12}, t_2 \rangle, a) = \langle \delta_1 (q_{12}, a), \delta_2 (t_2, a) \rangle = \langle t_1, s_2 \rangle $
+        \item $ \delta (\langle q_{12}, t_2 \rangle, b) = \langle \delta_1 (q_{12}, b), \delta_2 (t_2, b) \rangle = \langle t_1, s_2 \rangle $
+        
+        \item $ \delta (\langle t_1, s_2 \rangle, a) = \langle \delta_1 (t_1, a), \delta_2 (s_2, a) \rangle = \langle t_1, t_2 \rangle $
+        \item $ \delta (\langle t_1, s_2 \rangle, b) = \langle \delta_1 (t_1, b), \delta_2 (s_2, b) \rangle = \langle t_1, t_2 \rangle $
+        
+        \item $ \delta (\langle t_1, t_2 \rangle, a) = \langle \delta_1 (t_1, a), \delta_2 (t_2, a) \rangle = \langle t_1, s_2 \rangle $
+        \item $ \delta (\langle t_1, t_2 \rangle, b) = \langle \delta_1 (t_1, b), \delta_2 (t_2, b) \rangle = \langle t_1, s_2 \rangle $
+    \end{itemize}
+\end{enumerate}
+
+Строим автомат $ A_2 $ :
+
+\begin{flushleft}
+    \begin{dot2tex}
+        digraph DFA2 {
+            rankdir=LR;
+            node [shape = none]; "";
+            node [shape = doublecircle]; t1t2;
+            node [shape = circle];
+            "" -> s1s2;
+            s1s2 -> q11t2 [label = "a,b"];
+            s1t2 -> q11s2 [label = "a,b"];
+            q11s2 -> q12t2 [label = "a,b"];
+            q11t2 -> q12s2 [label = "a,b"];
+            q12s2 -> t1t2 [label = "a,b"];
+            q12t2 -> t1s2 [label = "a,b"];
+            t1s2 -> t1t2 [label = "a,b"];
+            t1t2 -> t1s2 [label = "a,b"]
+        }
+    \end{dot2tex}
+\end{flushleft}
+
+Минимизируем:
+
+\begin{flushleft}
+    \begin{dot2tex}
+        digraph DFA2 {
+            rankdir=LR;
+            node [shape = none]; "";
+            node [shape = doublecircle]; t1t2;
+            node [shape = circle];
+            "" -> s1s2;
+            s1s2 -> q11t2 [label = "a,b"];
+            q11t2 -> q12s2 [label = "a,b"];
+            q12s2 -> t1t2 [label = "a,b"];
+            t1s2 -> t1t2 [label = "a,b"];
+            t1t2 -> t1s2 [label = "a,b"]
+        }
+    \end{dot2tex}
+\end{flushleft}
+
+\section*{3}
+\[
+\begin{aligned}
+L_3 &= \{ w \in \{ a,b \}^* \quad | \quad |w|_a \text{ четно } \wedge |w|_b \text{ кратно трём } \} \\
+L_{31} &= \{ w \in \{ a,b \}^* \quad | \quad |w|_a \text{ четно } \}
+\end{aligned}
+\]
+
+\begin{center}
+\begin{dot2tex}
+digraph DFA31 {
+rankdir = LR;
+node [shape = doublecircle]; s1;
+node [shape=none]; "";
+node [shape = circle];
+"" -> s1;
+s1 -> s1 [label = "b"];
+s1 -> t1 [label = "a"];
+t1 -> t1 [label = "b"];
+t1 -> s1 [label = "a"]
+}
+\end{dot2tex}
+\end{center}
+
+\[
+L_{32} &= \{ w \in \{ a,b \}^* \quad | \quad |w|_b \text{ кратно трём } \}
+\]
+
+\begin{center}
+\begin{dot2tex}
+digraph DFA32 {
+rankdir = LR;
+node [shape = doublecircle]; s2;
+node [shape=none]; "";
+node [shape = circle];
+"" -> s2;
+s2 -> s2 [label = "a"];
+s2 -> q2 [label = "b"];
+q2 -> q2 [label = "a"];
+q2 -> t2 [label = "b"];
+t2 -> t2 [label = "a"];
+t2 -> s2 [label = "b"]
+}
+\end{dot2tex}
+\end{center}
+
+\[
+\begin{aligned}
+L_3 &= L_{31} \cap L_{32} \\
+A_{31} &= \{ \Sigma = \{a, b\}, Q_1 = \{ s_1, t_1 \}, s_1, T_1 = \{ s_1 \}, \delta_1  \} \\
+A_{32} &= \{ \Sigma = \{a, b\}, Q_2 = \{ s_2, q_2, t_2 \}, s_2, T_2 = \{ s_2 \}, \delta_2  \} \\
+A_3 &= \{ \Sigma, Q, s, T, \delta \}
+\end{aligned}
+\]
+
+\begin{enumerate}
+    \item $ \Sigma = \{ a, b \} $
+    \item $ Q = Q_1 \times Q_2 = \{ \langle s_1, s_2 \rangle, \langle s_1, q_2 \rangle, \langle s_1, t_2 \rangle, \langle t_1, s_2 \rangle, \langle t_1, q_2 \rangle, \langle t_1, t_2 \rangle \} $ 
+    \item $ s = \langle s_1, s_2 \rangle $
+    \item $ T = T_1 \times T_2 = \{ \langle s_1, s_2 \rangle \}$
+    \item $ \delta : $
+    \begin{itemize}
+        \item $ \delta (\langle s_1, s_2 \rangle, a) = \langle \delta_1 (s_1, a), \delta_2 (s_2, a) \rangle = \langle t_1, s_2 \rangle $
+        \item $ \delta (\langle s_1, s_2 \rangle, b) = \langle \delta_1 (s_1, b), \delta_2 (s_2, b) \rangle = \langle s_1, q_2 \rangle $
+        
+        \item $ \delta (\langle s_1, q_2 \rangle, a) = \langle \delta_1 (s_1, a), \delta_2 (q_2, a) \rangle = \langle t_1, q_2 \rangle $
+        \item $ \delta (\langle s_1, q_2 \rangle, b) = \langle \delta_1 (s_1, b), \delta_2 (q_2, b) \rangle = \langle s_1, t_2 \rangle $
+        
+        \item $ \delta (\langle s_1, t_2 \rangle, a) = \langle \delta_1 (s_1, a), \delta_2 (t_2, a) \rangle = \langle t_1, t_2 \rangle $
+        \item $ \delta (\langle s_1, t_2 \rangle, b) = \langle \delta_1 (s_1, b), \delta_2 (t_2, b) \rangle = \langle s_1, s_2 \rangle $
+        
+        \item $ \delta (\langle t_1, s_2 \rangle, a) = \langle \delta_1 (t_1, a), \delta_2 (s_2, a) \rangle = \langle s_1, s_2 \rangle $
+        \item $ \delta (\langle t_1, s_2 \rangle, b) = \langle \delta_1 (t_1, b), \delta_2 (s_2, b) \rangle = \langle t_1, q_2 \rangle $
+        
+        \item $ \delta (\langle t_1, q_2 \rangle, a) = \langle \delta_1 (t_1, a), \delta_2 (q_2, a) \rangle = \langle s_1, q_2 \rangle $
+        \item $ \delta (\langle t_1, q_2 \rangle, b) = \langle \delta_1 (t_1, b), \delta_2 (q_2, b) \rangle = \langle t_1, t_2 \rangle $
+        
+        \item $ \delta (\langle t_1, t_2 \rangle, a) = \langle \delta_1 (t_1, a), \delta_2 (t_2, a) \rangle = \langle s_1, t_2 \rangle $
+        \item $ \delta (\langle t_1, t_2 \rangle, b) = \langle \delta_1 (t_1, b), \delta_2 (t_2, b) \rangle = \langle t_1, s_2 \rangle $
+    \end{itemize}
+\end{enumerate}
+
+Автомат $ A_3 $ :
+
+\begin{flushleft}
+\begin{dot2tex}
+digraph DFA3 {
+rankdir = RL;
+node [shape = doublecircle]; s1s2;
+node [shape=none]; "";
+node [shape = circle];
+"" -> s1s2;
+s1s2 -> t1s2 [label = "a"];
+s1s2 -> s1q2 [label=b];
+s1q2 -> t1q2 [label=a];
+s1q2 -> s1t2 [label=b];
+s1t2 -> t1t2 [label=a];
+s1t2 -> s1s2 [label=b];
+t1s2 -> s1s2 [label=a];
+t1s2 -> t1q2 [label=b];
+t1q2 -> s1q2 [label=a];
+t1q2 -> t1t2 [label=b];
+t1t2 -> s1t2 [label=a];
+t1t2 -> t1s2 [label=b]
+}
+\end{dot2tex}
+\end{flushleft}
+
+\section*{4}
+
+\[ L_4 = \overline{L_3} \]
+
+\[ T_4 = Q_3 \backslash T_3 = \{ \langle s_1, q_2 \rangle, \langle s_1, t_2 \rangle, \langle t_1, s_2 \rangle, \langle t_1, q_2 \rangle, \langle t_1, t_2 \rangle \} 
+\]
+
+\begin{flushleft}
+\begin{dot2tex}
+digraph DFA4 {
+rankdir = RL;
+node [shape = circle]; s1s2;
+node [shape=none]; "";
+node [shape = doublecircle];
+"" -> s1s2;
+s1s2 -> t1s2 [label = "a"];
+s1s2 -> s1q2 [label=b];
+s1q2 -> t1q2 [label=a];
+s1q2 -> s1t2 [label=b];
+s1t2 -> t1t2 [label=a];
+s1t2 -> s1s2 [label=b];
+t1s2 -> s1s2 [label=a];
+t1s2 -> t1q2 [label=b];
+t1q2 -> s1q2 [label=a];
+t1q2 -> t1t2 [label=b];
+t1t2 -> s1t2 [label=a];
+t1t2 -> t1s2 [label=b]
+}
+\end{dot2tex}
+\end{flushleft}
+
+\section*{5}
+\[ L_5 = L_2 \backslash L_3 = L_2 \cap \overline{L_3} \]
+
+\begin{center}
+    \begin{dot2tex}
+        digraph DFA2 {
+            rankdir=LR;
+            node [shape = none]; "";
+            node [shape = doublecircle]; E;
+            node [shape = circle];
+            "" -> A;
+            A -> B [label = "a,b"];
+            B -> C [label = "a,b"];
+            C -> E [label = "a,b"];
+            D -> E [label = "a,b"];
+            E -> D [label = "a,b"]
+        }
+    \end{dot2tex}
+\end{center}
+
+\begin{flushleft}
+\begin{dot2tex}
+digraph DFA4 {
+rankdir = LR;
+node [shape = circle]; F;
+node [shape=none]; "";
+node [shape = doublecircle];
+"" -> F;
+F -> G [label = "a"];
+F -> H [label=b];
+H -> I [label=a];
+H -> J [label=b];
+J -> K [label=a];
+J -> F [label=b];
+G -> F [label=a];
+G -> I [label=b];
+I -> H [label=a];
+I -> K [label=b];
+K -> J [label=a];
+K -> G [label=b]
+}
+\end{dot2tex}
+\end{flushleft}
+
+\begin{enumerate}
+    \item $ \Sigma = \{ a, b \} $
+    \item $
+    \begin{aligned}
+    Q = Q_2 \times Q_3 = &\{ \langle A, F \rangle, \langle A, G \rangle, \langle A, I \rangle, \langle A, H \rangle, \langle A, J \rangle, \langle A, K \rangle,  \\ &\langle B, F \rangle, \langle B, G \rangle, \langle B, I \rangle, \langle B, H \rangle, \langle B, J \rangle, \langle B, K \rangle, \\ &\langle C, F \rangle, \langle C, G \rangle, \langle C, I \rangle, \langle C, H \rangle, \langle C, J \rangle, \langle C, K \rangle, \\ &\langle D, F \rangle, \langle D, G \rangle, \langle D, I \rangle, \langle D, H \rangle, \langle D, J \rangle, \langle D, K \rangle, \\ &\langle E, F \rangle, \langle E, G \rangle, \langle E, I \rangle, \langle E, H \rangle, \langle E, J \rangle, \langle E, K \rangle 
+    \}
+    \end{aligned}
+    $ 
+    \item $ s = \langle A, F \rangle $
+    \item $ T = T_2 \times T_3 = \{ \langle E, G \rangle, \langle E, I \rangle, \langle E, H \rangle, \langle E, J \rangle, \langle E, K \rangle \}$
+    \item $ \delta : $
+\end{enumerate}
+
+\begin{center}
+\begin{tabular}{||c | c | c ||}
+    \hline
+  \rowcolor[gray]{.9} node & a & b \\  \hline \hline
+  $ \langle A, F \rangle $ & $ \langle B, G \rangle $ & $ \langle B, H \rangle $ \\ \hline
+  $ \langle A, G \rangle $ & $ \langle B, F \rangle $ & $ \langle B, I \rangle $ \\ \hline
+  $ \langle A, I \rangle $ & $ \langle B, H \rangle $ & $ \langle B, K \rangle $ \\ \hline
+  $ \langle A, H \rangle $ & $ \langle B, I \rangle $ & $ \langle B, J \rangle $  \\ \hline
+  $ \langle A, J \rangle $ & $ \langle B, K \rangle $ & $ \langle B, F \rangle $ \\ \hline
+  $ \langle A, K \rangle $ & $ \langle B, J \rangle $ & $ \langle B, G \rangle $ \\ \hline
+  $ \langle B, F \rangle $ & $ \langle C, G \rangle $ & $ \langle C, H \rangle $ \\ \hline
+  $ \langle B, G \rangle $ & $ \langle C, F \rangle $ & $ \langle C, I \rangle $ \\ \hline
+  $ \langle B, I \rangle $ & $ \langle C, H \rangle $ & $ \langle C, K \rangle $ \\ \hline
+  $ \langle B, H \rangle $ & $ \langle C, I \rangle $ & $ \langle C, J \rangle $  \\ \hline
+  $ \langle B, J \rangle $ & $ \langle C, K \rangle $ & $ \langle C, F \rangle $ \\ \hline
+  $ \langle B, K \rangle $ & $ \langle C, J \rangle $ & $ \langle C, G \rangle $ \\ \hline
+  $ \langle C, F \rangle $ & $ \langle E, G \rangle $ & $ \langle E, H \rangle $ \\ \hline
+  $ \langle C, G \rangle $ & $ \langle E, F \rangle $ & $ \langle E, I \rangle $ \\ \hline
+  $ \langle C, I \rangle $ & $ \langle E, H \rangle $ & $ \langle E, K \rangle $ \\ \hline
+  $ \langle C, H \rangle $ & $ \langle E, I \rangle $ & $ \langle E, J \rangle $  \\ \hline
+  $ \langle C, J \rangle $ & $ \langle E, K \rangle $ & $ \langle E, F \rangle $ \\ \hline
+  $ \langle C, K \rangle $ & $ \langle E, J \rangle $ & $ \langle E, G \rangle $ \\ \hline
+  $ \langle D, F \rangle $ & $ \langle E, G \rangle $ & $ \langle E, H \rangle $ \\ \hline
+  $ \langle D, G \rangle $ & $ \langle E, F \rangle $ & $ \langle E, I \rangle $ \\ \hline
+  $ \langle D, I \rangle $ & $ \langle E, H \rangle $ & $ \langle E, K \rangle $ \\ \hline
+  $ \langle D, H \rangle $ & $ \langle E, I \rangle $ & $ \langle E, J \rangle $  \\ \hline
+  $ \langle D, J \rangle $ & $ \langle E, K \rangle $ & $ \langle E, F \rangle $ \\ \hline
+  $ \langle D, K \rangle $ & $ \langle E, J \rangle $ & $ \langle E, G \rangle $ \\ \hline
+  $ \langle E, F \rangle $ & $ \langle D, G \rangle $ & $ \langle D, H \rangle $ \\ \hline
+  $ \langle E, G \rangle $ & $ \langle D, F \rangle $ & $ \langle D, I \rangle $ \\ \hline
+  $ \langle E, I \rangle $ & $ \langle D, H \rangle $ & $ \langle D, K \rangle $ \\ \hline
+  $ \langle E, H \rangle $ & $ \langle D, I \rangle $ & $ \langle D, J \rangle $  \\ \hline
+  $ \langle E, J \rangle $ & $ \langle D, K \rangle $ & $ \langle D, F \rangle $ \\ \hline
+  $ \langle E, K \rangle $ & $ \langle D, J \rangle $ & $ \langle D, G \rangle $ \\ \hline
+\end{tabular}
+\end{center}
+
+Построим соответствующий автомат:
+
+% \begin{flushleft}
+%     \begin{dot2tex}
+%         digraph DFA5 {
+%             node [shape = doublecircle]; EG EI EH EJ EK;
+%             node [shape=none]; "";
+%             node [shape = circle];
+%             "" -> AF;
+%             AF -> BG [label = a];
+%             AF -> BH [label = b];
+%             AG -> BF [label = a];
+%             AG -> BI [label = b];
+%             AI -> BH [label = a];
+%             AI -> BK [label = b];
+%             AH -> BI [label = a];
+%             AH -> BJ [label = b];
+%             AJ -> BK [label = a];
+%             AJ -> BF [label = b];
+%             AK -> BJ [label = a];
+%             AK -> BG [label = b];
+%             BF -> CG [label = a];
+%             BF -> CH [label = b];
+%             BG -> CF [label = a];
+%             BG -> CI [label = b];
+%             BI -> CH [label = a];
+%             BI -> CK [label = b];
+%             BH -> CI [label = a];
+%             BH -> CJ [label = b];
+%             BJ -> CK [label = a];
+%             BJ -> CF [label = b];
+%             BK -> CJ [label = a];
+%             BK -> CG [label = b];
+%             CF -> EG [label = a];
+%             CF -> EH [label = b];
+%             CG -> EF [label = a];
+%             CG -> EI [label = b];
+%             CI -> EH [label = a];
+%             CI -> EK [label = b];
+%             CH -> EI [label = a];
+%             CH -> EJ [label = b];
+%             CJ -> EK [label = a];
+%             CJ -> EF [label = b];
+%             CK -> EJ [label = a];
+%             CK -> EG [label = b];
+%             DF -> EG [label = a];
+%             DF -> EH [label = b];
+%             DG -> EF [label = a];
+%             DG -> EI [label = b];
+%             DI -> EH [label = a];
+%             DI -> EK [label = b];
+%             DH -> EI [label = a];
+%             DH -> EJ [label = b];
+%             DJ -> EK [label = a];
+%             DJ -> EF [label = b];
+%             DK -> EJ [label = a];
+%             DK -> EG [label = b];
+%             EF -> DG [label = a];
+%             EF -> DH [label = b];
+%             EG -> DF [label = a];
+%             EG -> DI [label = b];
+%             EI -> DH [label = a];
+%             EI -> DK [label = b];
+%             EH -> DI [label = a];
+%             EH -> DJ [label = b];
+%             EJ -> DK [label = a];
+%             EJ -> DF [label = b];
+%             EK -> DJ [label = a];
+%             EK -> DG [label = b]
+%         }
+%     \end{dot2tex}
+% \end{flushleft}
+
+\begin{figure}[h]
+\center{\includegraphics[scale=1.0]{DFA25.png}}
+\end{figure}
+
+\end{document}
