@@ -1,0 +1,111 @@
+\documentclass[a4paper, 12pt]{article}
+\usepackage[utf8]{inputenc}
+
+\usepackage[left=1.5cm,right=1cm,
+    top=3cm,bottom=3cm, bindingoffset=0cm]{geometry}
+    
+\usepackage[autosize]{dot2texi}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows}
+
+\usepackage[T2A]{fontenc} 
+\usepackage[utf8]{inputenc}
+\usepackage[english, russian]{babel} 
+
+\usepackage[usenames]{color}
+\usepackage{colortbl}
+
+\usepackage{amsmath, amsfonts, amssymb, amsthm, mathtools}
+\title{DFA 4}
+\author{Руслан Кутдусов А-13а}
+\date{April 2022}
+
+\begin{document}
+
+\maketitle
+
+\section*{1}
+\[ L = \{ (aab)^nb(aba)^m \quad | \quad n \geq 0, m \geq 0 \} \]
+
+\begin{center}
+    \begin{dot2tex}
+        digraph G {
+            rankdir=LR;
+            node [shape = none]; "";
+            node [shape = doublecircle]; t;
+            node [shape = circle];
+            "" -> s;
+            s -> 1 [label = a];
+            1 -> 2 [label = a];
+            2 -> s [label = b];
+            s -> t [label = b];
+            t -> 3 [label = a];
+            3 -> 4 [label = b];
+            4 -> t [label = a];
+        }
+    \end{dot2tex}
+\end{center}
+
+Язык является регулярным.
+
+\section*{2}
+\[ L = \{ uaav | u \in \{a, b\}^*, v \in \{ a, b \}^*, |u|_b \geq |v|_a \}  \]
+
+Лемма о накачке является необходимым условием регулярности языка. Используем отрицание леммы для доказательства нерегулярности заданного языка.
+
+Зафиксируем $ p \in \mathbb{N} $, возьмем $ w = b^paaa^p, |w| \geq p $. Разобьем $ w = xyz $ так, что $ | xy | \leq p, y \neq \lambda $. Пусть $ x = b^{\alpha}, |x| = \alpha $ и $ y = b^{\beta}, |y| = \beta $, причем $ \alpha + \beta \leq p, \beta \neq 0 $. Тогда $ z = b^{p - \alpha - \beta}aaa^p $, поэтому $ w = b^{\alpha}b^{\beta}b^{p - \alpha - \beta}aaa^p $. При $ i = 0 $ имеем $ w = b^{\alpha}b^{0}b^{p - \alpha - \beta}aaa^p = b^{p - \beta}aaa^p \notin L $.
+
+\section*{3}
+\[ L = \{ a^mw | w \in \{a, b\}^*, 1 \leq  |w|_b \leq m \}  \]
+
+По теореме о замкнутости регулярных языков относительно различных операций, отрицание регулярного языка также является регулярным языком. Используем отрицание леммы о разрастании для доказательства нерегулярности отрицания заданного языка:
+
+\[ \overline{L} = \{ a^mw | w \in \{a, b\}^*, m \geq 0, |w|_b > m \}  \]
+
+Зафиксируем $ p \in \mathbb{N} $, возьмем $ w_1 = a^pb^{p+1}, |w_1| \geq p $. Разобьем $ w_1 = xyz $ так, что $ | xy | \leq p, y \neq \lambda $. Пусть $ x = a^{\alpha}, |x| = \alpha $ и $ y = a^{\beta}, |y| = \beta $, причем $ \alpha + \beta \leq p, \beta \neq 0 $. Тогда $ z = a^{p - \alpha - \beta}b^{p+1} $, поэтому $ w_1 = a^{\alpha}a^{\beta}a^{p - \alpha - \beta}b^{p + 1} $. При $ i > 1 $ (допустим, $ i = 2 $) имеем $ w_1 = a^{\alpha}(a^{\beta})^2a^{p - \alpha - \beta}b^{p + 1} = a^{p + \beta}b^{p + 1} \notin \overline{L} $ (у нас $ \beta > 0 $).
+
+\section*{4}
+\[ L = \{ a^kb^ma^n | k = n \vee m > 0 \}  \]
+
+\begin{enumerate}
+    \item $ k = n $
+    
+    Используем отрицание леммы о накачке для доказательства нерегулярности языка $ L_1 = \{ a^kb^ma^n | k = n \}  $.
+    
+    Зафиксируем $ p \in \mathbb{N} $, возьмем $ w = a^pb^ma^p, |w| \geq p $. Разобьем $ w = xyz $ так, что $ | xy | \leq p, y \neq \lambda $. Пусть $ x = a^{\alpha}, |x| = \alpha $ и $ y = a^{\beta}, |y| = \beta $, причем $ \alpha + \beta \leq p, \beta \neq 0 $. Тогда $ z = a^{p - \alpha - \beta}b^ma^p $, поэтому $ w = a^{\alpha}a^{\beta}a^{p - \alpha - \beta}b^ma^p $. При $ i \neq 1 $ (допустим, $ i = 2 $) имеем $ w = a^{\alpha}(a^{\beta})^ia^{p - \alpha - \beta}b^ma^p = a^{p + \beta}b^ma^p \notin L $ (у нас $ \beta \neq 0 $).
+    
+    \item $ m > 0 $
+    
+    Язык $ L_2 = \{ a^kb^ma^n | m > 0 \}  $ является регулярным.
+    
+    \begin{center}
+    \begin{dot2tex}
+        digraph G1 {
+            rankdir=LR;
+            node [shape = none]; "";
+            node [shape = doublecircle]; q; t;
+            node [shape = circle];
+            "" -> s;
+            s -> s [label = a];
+            s -> q [label = b];
+            q -> q [label = b];
+            q -> t [label = a];
+            t -> t [label = a]
+        }
+    \end{dot2tex}
+\end{center}
+    
+\end{enumerate}
+
+Можно сделать вывод о том, что язык $ L $ яляется регулярным.
+
+\section*{5}
+\[ L = \{ ucv | u \in \{a, b\}^*, v \in \{a, b\}^*∗, u \neq v^{Reverse}\}  \]
+
+По теореме о замкнутости регулярных языков относительно различных операций, отрицание регулярного языка также является регулярным языком. Используем отрицание леммы о разрастании для доказательства нерегулярности отрицания заданного языка:
+
+\[ \overline{L} = \{ ucv | u \in \{a, b\}^*, v \in \{a, b\}^*∗, u = v^{Reverse}\}  \]
+
+Зафиксируем $ p \in \mathbb{N} $, возьмем $ w = a^pbcba^p, |w| \geq p $. Разобьем $ w = xyz $ так, что $ | xy | \leq p, y \neq \lambda $. Пусть $ x = a^{\alpha}, |x| = \alpha $ и $ y = a^{\beta}, |y| = \beta $, причем $ \alpha + \beta \leq p, \beta \neq 0 $. Тогда $ z = a^{p - \alpha - \beta}bcba^p $, поэтому $ w = a^{\alpha}a^{\beta}a^{p - \alpha - \beta}bcba^p $. При $ i = 0 $ имеем $ w = a^{\alpha}(a^{\beta})^0a^{p - \alpha - \beta}bcba^p = a^{p - \beta}bcba^p \notin \overline{L} $ (у нас $ \beta \neq 0 $).
+
+\end{document}
